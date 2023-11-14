@@ -51,7 +51,7 @@ namespace MigrationTools.DataContracts.Pipelines
             Source = "restApi";
             Revision = 1;
             Links = null;
-            Artifacts = null;
+            //Artifacts = null;
             Url = null;
             Links = null;
             Id = "0";
@@ -201,8 +201,33 @@ namespace MigrationTools.DataContracts.Pipelines
             {
                 deployPhase.ResetObject();
             }
-            PreDeployApprovals.ResetObject();
-            PostDeployApprovals.ResetObject();
+            //PreDeployApprovals.ResetObject();
+            //PostDeployApprovals.ResetObject();
+
+            PreDeployApprovals = new DeployApprovals
+            {
+                Approvals = new[]
+                {
+                    new Approval
+                    {
+                        Rank = 1,
+                        Id = 0,
+                        IsNotificationOn = false,
+                    }
+                }
+            };
+            PostDeployApprovals = new DeployApprovals
+            {
+                Approvals = new[]
+                {
+                    new Approval
+                    {
+                        Rank = 1,
+                        Id = 0,
+                        IsNotificationOn = false,
+                    }
+                }
+            };
         }
     }
 
