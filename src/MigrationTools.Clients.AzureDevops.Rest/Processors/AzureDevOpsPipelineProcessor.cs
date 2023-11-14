@@ -364,10 +364,31 @@ namespace MigrationTools.Processors
                             var newInputs = new Dictionary<string, object>();
                             foreach (var input in (IDictionary<String, Object>)step.Inputs)
                             {
-                                var mapping = serviceConnectionMappings.FirstOrDefault(d => d.SourceId == input.Value.ToString());
-                                if (mapping != null)
+                                if (input.Key.Equals("externalEndpoints", StringComparison.OrdinalIgnoreCase))
                                 {
-                                    newInputs.Add(input.Key, mapping.TargetId);
+                                    var split = input.Value.ToString().Split(',');
+                                    var mappedValues = new List<string>();
+                                    foreach (var value in split)
+                                    {
+                                        var mapping = serviceConnectionMappings.FirstOrDefault(d => d.SourceId == value);
+                                        if (mapping != null)
+                                        {
+                                            mappedValues.Add(mapping.TargetId);
+                                        }
+                                    }
+
+                                    if (mappedValues.Any())
+                                    {
+                                        newInputs.Add(input.Key, string.Join(",", mappedValues));
+                                    }
+                                }
+                                else
+                                {
+                                    var mapping = serviceConnectionMappings.FirstOrDefault(d => d.SourceId == input.Value.ToString());
+                                    if (mapping != null)
+                                    {
+                                        newInputs.Add(input.Key, mapping.TargetId);
+                                    }
                                 }
                             }
 
