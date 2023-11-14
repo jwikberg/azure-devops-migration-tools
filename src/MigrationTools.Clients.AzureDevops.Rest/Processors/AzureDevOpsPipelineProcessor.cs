@@ -78,6 +78,7 @@ namespace MigrationTools.Processors
             IEnumerable<Mapping> serviceConnectionMappings = null;
             IEnumerable<Mapping> taskGroupMappings = null;
             IEnumerable<Mapping> variableGroupMappings = null;
+            IEnumerable<Mapping> buildPipelineMappings = null;
             if (_Options.MigrateServiceConnections)
             {
                 serviceConnectionMappings = await CreateServiceConnectionsAsync();
@@ -92,12 +93,12 @@ namespace MigrationTools.Processors
             }
             if (_Options.MigrateBuildPipelines)
             {
-                await CreateBuildPipelinesAsync(taskGroupMappings, variableGroupMappings, serviceConnectionMappings);
+                buildPipelineMappings = await CreateBuildPipelinesAsync(taskGroupMappings, variableGroupMappings, serviceConnectionMappings);
             }
 
             if (_Options.MigrateReleasePipelines)
             {
-                await CreateReleasePipelinesAsync(taskGroupMappings, variableGroupMappings, serviceConnectionMappings);
+                await CreateReleasePipelinesAsync(taskGroupMappings, variableGroupMappings, serviceConnectionMappings, buildPipelineMappings);
             }
             stopwatch.Stop();
             Log.LogDebug("DONE in {Elapsed} ", stopwatch.Elapsed.ToString("c"));
@@ -228,7 +229,7 @@ namespace MigrationTools.Processors
                 {
                     Log.LogWarning(
                         @"{DefinitionType} ""{DefinitionName}"" cannot be migrated because the Task(s) ""{MissingTaskNames}"" are not available. This usually happens if the extension for the task is not installed.",
-                        typeof(TaskGroup).Name, g.Name ,string.Join(",", missingTasksNames));
+                        typeof(TaskGroup).Name, g.Name, string.Join(",", missingTasksNames));
                     return false;
                 }
                 return true;
@@ -436,7 +437,7 @@ namespace MigrationTools.Processors
             }
         }
 
-        private async Task<IEnumerable<Mapping>> CreateReleasePipelinesAsync(IEnumerable<Mapping> TaskGroupMapping = null, IEnumerable<Mapping> VariableGroupMapping = null, IEnumerable<Mapping> ServiceConnectionMappings = null)
+        private async Task<IEnumerable<Mapping>> CreateReleasePipelinesAsync(IEnumerable<Mapping> TaskGroupMapping = null, IEnumerable<Mapping> VariableGroupMapping = null, IEnumerable<Mapping> ServiceConnectionMappings = null, IEnumerable<Mapping> buildPipelineMappings = null)
         {
             Log.LogInformation($"Processing Release Pipelines..");
 
@@ -467,6 +468,8 @@ namespace MigrationTools.Processors
                 }
 
                 UpdateServiceConnectionId(definitionToBeMigrated, ServiceConnectionMappings);
+
+                UpdateArtifacts(definitionToBeMigrated, buildPipelineMappings);
             }
 
             var mappings = await Target.CreateApiDefinitionsAsync<ReleaseDefinition>(definitionsToBeMigrated);
@@ -474,6 +477,24 @@ namespace MigrationTools.Processors
             return mappings;
         }
 
+        private void UpdateArtifacts(ReleaseDefinition definitionToBeMigrated, IEnumerable<Mapping> buildPipelineMappings)
+        {
+            foreach (var artifact in definitionToBeMigrated.Artifacts)
+            {
+                var matchingDefinition = buildPipelineMappings.FirstOrDefault(bpm => bpm.SourceId == artifact.DefinitionReference.Definition.Id);
+
+                if (matchingDefinition is null)
+                {
+                    return;
+                }
+
+                artifact.SourceId = null;
+                artifact.DefinitionReference.ArtifactSourceDefinitionUrl = null;
+                artifact.DefinitionReference.Definition.Id = matchingDefinition.TargetId;
+                artifact.DefinitionReference.Definition.Name = matchingDefinition.Name;
+                artifact.DefinitionReference.Project.Name = Target.Options.Project;
+            }
+        }
         private IEnumerable<DefinitionType> FilterAwayIfAnyMapsAreMissing<DefinitionType>(
                                                 IEnumerable<DefinitionType> definitionsToBeMigrated,
                                                 IEnumerable<Mapping> TaskGroupMapping,
