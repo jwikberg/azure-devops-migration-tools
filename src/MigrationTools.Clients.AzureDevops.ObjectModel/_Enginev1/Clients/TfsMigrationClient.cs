@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Threading;
+using Azure.Core;
+using Azure.Identity;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.TeamFoundation.Client;
+using Microsoft.VisualStudio.Services.Client;
 using Microsoft.VisualStudio.Services.Common;
 using MigrationTools._EngineV1.Configuration;
 using MigrationTools.Endpoints;
@@ -138,8 +142,15 @@ namespace MigrationTools._EngineV1.Clients
                         break;
 
                     case AuthenticationMode.Prompt:
+                        var credential = new DefaultAzureCredential(new DefaultAzureCredentialOptions { ExcludeSharedTokenCacheCredential = false, ExcludeInteractiveBrowserCredential = false });
+
                         Log.Information("TfsMigrationClient::GetDependantTfsCollection: Prompting for credentials ");
-                        y = new TfsTeamProjectCollection(TfsConfig.Collection);
+
+                        var tokenRequestContext = new TokenRequestContext(VssAadSettings.DefaultScopes);
+                        var accessToken = credential.GetToken(tokenRequestContext);
+                        _vssCredentials = new VssAadCredential(new VssAadToken("Bearer", accessToken.Token));
+
+                        y = new TfsTeamProjectCollection(TfsConfig.Collection, _vssCredentials);
                         break;
 
                     default:
