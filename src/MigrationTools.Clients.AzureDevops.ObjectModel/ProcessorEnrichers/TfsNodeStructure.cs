@@ -19,7 +19,6 @@ using Serilog.Context;
 using Serilog.Events;
 using ILogger = Serilog.ILogger;
 
-
 namespace MigrationTools.Enrichers
 {
     public enum TfsNodeStructureType
@@ -246,8 +245,10 @@ namespace MigrationTools.Enrichers
             {
                 case TfsNodeStructureType.Area:
                     return _Options.AreaMaps;
+
                 case TfsNodeStructureType.Iteration:
                     return _Options.IterationMaps;
+
                 default:
                     throw new ArgumentOutOfRangeException(nameof(nodeStructureType), nodeStructureType, null);
             }
@@ -516,10 +517,10 @@ namespace MigrationTools.Enrichers
                 case TfsNodeStructureType.Iteration:
                     fieldName = "System.IterationPath";
                     break;
+
                 case TfsNodeStructureType.Area:
                     fieldName = "System.AreaPath";
                     break;
-
             }
             return fieldName;
         }
@@ -551,7 +552,8 @@ namespace MigrationTools.Enrichers
                     missingItem.targetPath = GetNewNodeName(missingItem.sourcePath, nodeType);
                     contextLog.Debug("TfsNodeStructure:CheckForMissingPaths:GetNewNodeName::{@missingItem}", missingItem);
                 }
-                catch (NodePathNotAnchoredException ex) {
+                catch (NodePathNotAnchoredException ex)
+                {
                     contextLog.Debug("TfsNodeStructure:CheckForMissingPaths:NodePathNotAnchoredException::{@missingItem}", missingItem);
                     missingItem.anchored = false;
                     List<int> workItemsNotAncored = workItems.SelectMany(x => x.Revisions.Values)
@@ -563,7 +565,8 @@ namespace MigrationTools.Enrichers
                     keepProcessing = false;
                     missingPaths.Add(missingItem);
                 }
-                if (keepProcessing) {
+                if (keepProcessing)
+                {
                     missingItem.systemPath = GetSystemPath(missingItem.targetPath, nodeType);
                     try
                     {
@@ -576,19 +579,18 @@ namespace MigrationTools.Enrichers
                         contextLog.Debug("TfsNodeStructure:CheckForMissingPaths:CheckTarget::NOTFOUND::{@missingItem}::NOTFOUND", missingItem);
                         if (_Options.ShouldCreateMissingRevisionPaths && ShouldCreateNode(missingItem.systemPath))
                         {
-                        
                             contextLog.Debug("TfsNodeStructure:CheckForMissingPaths:CheckTarget::CREATE::{@missingItem}", missingItem);
                             GetOrCreateNode(missingItem.systemPath, null, null);
                         }
                         else
-                        { 
+                        {
                             missingPaths.Add(missingItem);
                             contextLog.Debug("TfsNodeStructure:CheckForMissingPaths:CheckTarget::LOG-ONLY::{@missingItem}", missingItem);
                         }
                     }
                 }
             }
-            if(_Options.ShouldCreateMissingRevisionPaths )
+            if (_Options.ShouldCreateMissingRevisionPaths)
             {
                 _targetCommonStructureService.ClearProjectInfoCache();
             }
@@ -622,8 +624,8 @@ namespace MigrationTools.Enrichers
                 foreach (NodeStructureItem missingItem in missingItems)
                 {
                     string mapper = GetMappingForMissingItem(missingItem);
-                    bool isMapped = mapper.IsNullOrEmpty()?false:true;
-                   string workItemList = "n/a";
+                    bool isMapped = mapper.IsNullOrEmpty() ? false : true;
+                    string workItemList = "n/a";
                     if (missingItem.workItems != null)
                     {
                         workItemList = string.Join(",", missingItem.workItems);
@@ -631,7 +633,9 @@ namespace MigrationTools.Enrichers
                     if (isMapped)
                     {
                         contextLog.Warning("MAPPED {nodeType}: sourcePath={sourcePath}, mapper={mapper}", missingItem.nodeType, missingItem.sourcePath, mapper);
-                    } else { 
+                    }
+                    else
+                    {
                         contextLog.Warning("MISSING {nodeType}: sourcePath={sourcePath}, targetPath={targetPath}, anchored={anchored}, IDs={workItems}", missingItem.nodeType, missingItem.sourcePath, missingItem.targetPath, missingItem.anchored, workItemList);
                     }
                 }
@@ -653,6 +657,5 @@ namespace MigrationTools.Enrichers
             }
             return null;
         }
-
     }
 }

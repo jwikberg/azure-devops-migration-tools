@@ -11,9 +11,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Azure.Identity" Version="1.10.4" />
     <PackageReference Include="Ben.Demystifier" Version="0.4.1" />
-    <PackageReference Include="Microsoft.TeamFoundation.DistributedTask.WebApi" Version="16.205.1" />
-    <PackageReference Include="Microsoft.TeamFoundationServer.ExtendedClient" Version="16.205.1" />
+    <PackageReference Include="Microsoft.TeamFoundation.DistributedTask.WebApi" Version="19.230.0-preview" />
+		<PackageReference Include="Microsoft.TeamFoundation.DistributedTask.Common.Contracts" Version="19.230.0-preview" />
+    <PackageReference Include="Microsoft.TeamFoundationServer.ExtendedClient" Version="19.230.0-preview" />
   </ItemGroup>
 
   <ItemGroup>

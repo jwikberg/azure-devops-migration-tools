@@ -1,25 +1,25 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <Product>MigrationTools.Clients.AzureDevops.Rest</Product>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>netstandard2.0</TargetFramework>
+		<Product>MigrationTools.Clients.AzureDevops.Rest</Product>
+	</PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>..\..\docs\Reference\Generated\MigrationTools.Clients.AzureDevops.Rest.xml</DocumentationFile>
-  </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+		<DocumentationFile>..\..\docs\Reference\Generated\MigrationTools.Clients.AzureDevops.Rest.xml</DocumentationFile>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.TeamFoundationServer.Client" Version="16.205.1" />
-    <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="6.0.0" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+		<PackageReference Include="Microsoft.TeamFoundationServer.Client" Version="19.230.0-preview" />
+		<PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="6.0.0" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\MigrationTools\MigrationTools.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\MigrationTools\MigrationTools.csproj" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Update="Newtonsoft.Json" Version="13.0.3" />
-  </ItemGroup>
-
+	<ItemGroup>
+		<PackageReference Update="Newtonsoft.Json" Version="13.0.3" />
+	</ItemGroup>
 </Project>

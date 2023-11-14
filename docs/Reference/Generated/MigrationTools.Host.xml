@@ -16,42 +16,42 @@
         </member>
         <member name="F:ThisAssembly.Git.RepositoryUrl">
             <summary>
-            => @"https://github.com/nkdAgility/azure-devops-migration-tools.git"
+            => @"https://github.com/jwikberg/azure-devops-migration-tools.git"
             </summary>
         </member>
         <member name="F:ThisAssembly.Git.Branch">
             <summary>
-            => @"issue/1772"
+            => @"HEAD"
             </summary>
         </member>
         <member name="F:ThisAssembly.Git.Commit">
             <summary>
-            => @"06bccf8"
+            => @"191a859"
             </summary>
         </member>
         <member name="F:ThisAssembly.Git.Sha">
             <summary>
-            => @"06bccf8671348e366db1a41cc36e81da315fabab"
+            => @"191a859e7a695cd8380a6c155e33dbb5c5a27cd1"
             </summary>
         </member>
         <member name="F:ThisAssembly.Git.CommitDate">
             <summary>
-            => @"2023-12-05T18:16:30+00:00"
+            => @"2023-12-06T11:45:56+00:00"
             </summary>
         </member>
         <member name="F:ThisAssembly.Git.Commits">
             <summary>
-            => @"3"
+            => @"0"
             </summary>
         </member>
         <member name="F:ThisAssembly.Git.Tag">
             <summary>
-            => @"v14.3.5-3-g06bccf8"
+            => @"v14.3.6"
             </summary>
         </member>
         <member name="F:ThisAssembly.Git.BaseTag">
             <summary>
-            => @"v14.3.5"
+            => @"v14.3.6"
             </summary>
         </member>
         <member name="F:ThisAssembly.Git.BaseVersion.Major">
@@ -66,7 +66,7 @@
         </member>
         <member name="F:ThisAssembly.Git.BaseVersion.Patch">
             <summary>
-            => @"5"
+            => @"6"
             </summary>
         </member>
         <member name="F:ThisAssembly.Git.SemVer.Major">
@@ -81,7 +81,7 @@
         </member>
         <member name="F:ThisAssembly.Git.SemVer.Patch">
             <summary>
-            => @"8"
+            => @"6"
             </summary>
         </member>
         <member name="F:ThisAssembly.Git.SemVer.Label">
