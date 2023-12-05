@@ -257,7 +257,12 @@
         </member>
         <member name="P:MigrationTools.Processors.AzureDevOpsPipelineProcessorOptions.RepositoryNameMaps">
             <summary>
-            Map of Source Repository to Target Repository Names 
+            Map of Source Repository to Target Repository Names
+            </summary>
+        </member>
+        <member name="P:MigrationTools.Processors.AzureDevOpsPipelineProcessorOptions.ServiceConnectionNameMaps">
+            <summary>
+            Map of Source Service Connection to Target Service Connection Names
             </summary>
         </member>
         <member name="T:MigrationTools.Processors.ProcessDefinitionModel">

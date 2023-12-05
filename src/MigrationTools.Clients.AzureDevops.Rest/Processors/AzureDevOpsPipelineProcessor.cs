@@ -659,7 +659,31 @@ namespace MigrationTools.Processors
 
             var sourceDefinitions = await Source.GetApiDefinitionsAsync<ServiceConnection>();
             var targetDefinitions = await Target.GetApiDefinitionsAsync<ServiceConnection>();
-            var mappings = await Target.CreateApiDefinitionsAsync(FilterOutExistingDefinitions(sourceDefinitions, targetDefinitions));
+
+            var mappings = new List<Mapping>();
+
+            if (_Options.ServiceConnectionNameMaps.Any())
+            {
+                foreach (var sourceDefinition in sourceDefinitions)
+                {
+                    if (_Options.ServiceConnectionNameMaps.TryGetValue(sourceDefinition.Name, out var targetName))
+                    {
+                        var target = targetDefinitions.FirstOrDefault(t => t.Name == targetName);
+                        mappings.Add(new Mapping
+                        {
+                            Name = targetName,
+                            SourceId = sourceDefinition.Id,
+                            TargetId = target.Id
+                        });
+                    }
+                }
+            }
+
+            var filteredDefinitions = FilterOutExistingDefinitions(sourceDefinitions, targetDefinitions)
+                .Where(sc => !mappings.Any(m => m.SourceId == sc.Id));
+
+            var newMappings = await Target.CreateApiDefinitionsAsync(filteredDefinitions);
+            mappings.AddRange(newMappings);
             mappings.AddRange(FindExistingMappings(sourceDefinitions, targetDefinitions, mappings));
             return mappings;
         }
