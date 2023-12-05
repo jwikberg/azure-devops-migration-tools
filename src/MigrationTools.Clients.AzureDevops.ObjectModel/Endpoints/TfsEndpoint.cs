@@ -1,8 +1,11 @@
 ﻿using System;
+using Azure.Core;
+using Azure.Identity;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.Extensions.Logging;
 using Microsoft.TeamFoundation.Client;
 using Microsoft.TeamFoundation.WorkItemTracking.Client;
+using Microsoft.VisualStudio.Services.Client;
 using Microsoft.VisualStudio.Services.Common;
 using MigrationTools.EndpointEnrichers;
 
@@ -95,8 +98,14 @@ namespace MigrationTools.Endpoints
                             break;
 
                         case AuthenticationMode.Prompt:
-                            Log.LogDebug("TfsWorkItemEndPoint::EnsureDataSource: Connecting Using Interactive Authentication ", Options.Organisation);
-                            _Collection = new TfsTeamProjectCollection(new Uri(Options.Organisation));
+                            var credential = new DefaultAzureCredential(new DefaultAzureCredentialOptions { ExcludeSharedTokenCacheCredential = false, ExcludeInteractiveBrowserCredential = false });
+
+                            Log.LogInformation("TfsMigrationClient::GetDependantTfsCollection: Prompting for credentials ");
+
+                            var tokenRequestContext = new TokenRequestContext(VssAadSettings.DefaultScopes);
+                            var accessToken = credential.GetToken(tokenRequestContext);
+                            vssCredentials = new VssAadCredential(new VssAadToken("Bearer", accessToken.Token));
+                            _Collection = new TfsTeamProjectCollection(new Uri(Options.Organisation), vssCredentials);
                             break;
 
                         default:
