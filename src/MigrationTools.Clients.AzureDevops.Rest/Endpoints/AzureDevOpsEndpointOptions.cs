@@ -10,8 +10,9 @@
 
         public string Project { get; set; }
 
-        public string ReflectedWorkItemIdField { get; set; }
+        public string ProjectId { get; set; }
 
+        public string ReflectedWorkItemIdField { get; set; }
 
         //public override void SetDefaults()
         //{

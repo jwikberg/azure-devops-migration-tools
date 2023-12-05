@@ -309,8 +309,7 @@ namespace MigrationTools.Processors
                     .FirstOrDefault(c => c.Id == sourceConnectedServiceId)?.Name == s.Name)?.Id;
                 definitionToBeMigrated.Repository.Properties.ConnectedServiceId = targetConnectedServiceId;
 
-
-                MapRepositoriesInBuidDefinition(sourceRepositories, targetRepositories, definitionToBeMigrated);
+                MapRepositoriesInBuildDefinition(sourceRepositories, targetRepositories, definitionToBeMigrated);
 
                 if (TaskGroupMapping is not null)
                 {
@@ -406,7 +405,7 @@ namespace MigrationTools.Processors
             return mappings;
         }
 
-        private void MapRepositoriesInBuidDefinition(IEnumerable<GitRepository> sourceRepositories, IEnumerable<GitRepository> targetRepositories, BuildDefinition definitionToBeMigrated)
+        private void MapRepositoriesInBuildDefinition(IEnumerable<GitRepository> sourceRepositories, IEnumerable<GitRepository> targetRepositories, BuildDefinition definitionToBeMigrated)
         {
             var sourceRepoId = definitionToBeMigrated.Repository.Id;
             string sourceRepositoryName = sourceRepositories.FirstOrDefault(s => s.Id == sourceRepoId)?.Name ?? string.Empty;
@@ -513,9 +512,11 @@ namespace MigrationTools.Processors
                 artifact.DefinitionReference.ArtifactSourceDefinitionUrl = null;
                 artifact.DefinitionReference.Definition.Id = matchingDefinition.TargetId;
                 artifact.DefinitionReference.Definition.Name = matchingDefinition.Name;
+                artifact.DefinitionReference.Project.Id = Target.Options.ProjectId;
                 artifact.DefinitionReference.Project.Name = Target.Options.Project;
             }
         }
+
         private IEnumerable<DefinitionType> FilterAwayIfAnyMapsAreMissing<DefinitionType>(
                                                 IEnumerable<DefinitionType> definitionsToBeMigrated,
                                                 IEnumerable<Mapping> TaskGroupMapping,
