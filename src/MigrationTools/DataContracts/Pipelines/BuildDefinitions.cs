@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
+using Microsoft.TeamFoundation.DistributedTask.Common.Contracts;
 using Microsoft.VisualStudio.Services.Common;
 using Newtonsoft.Json;
 
@@ -252,6 +253,11 @@ namespace MigrationTools.DataContracts.Pipelines
 
     public partial class ProcessParameters
     {
+        public DataSourceBindingBase[] DataSourceBindings { get; set; }
+
+        public TaskInputDefinitionBase[] Inputs { get; set; }
+
+        public TaskSourceDefinitionBase[] SourceDefinitions { get; set; }
     }
 
     public partial class Task
