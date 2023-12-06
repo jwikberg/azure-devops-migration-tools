@@ -297,6 +297,8 @@ namespace MigrationTools.DataContracts.Pipelines
         public string Condition { get; set; }
 
         public ProcessParameters OverrideInputs { get; set; }
+
+        public AgentSpecification AgentSpecification { get; set; }
     }
 
     public partial class ArtifactsDownloadInput
