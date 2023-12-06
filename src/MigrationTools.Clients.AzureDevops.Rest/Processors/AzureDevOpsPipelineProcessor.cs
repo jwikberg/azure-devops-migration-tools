@@ -626,14 +626,16 @@ namespace MigrationTools.Processors
                     foreach (var workflowTask in deployPhase.WorkflowTasks)
                     {
                         bool hasFoundInputWhichNeedsReplacement = false;
-                        string inputNameWhichNeedsValueReplacement = "azureSubscription";
+                        string[] inputNamesWhichNeedsValueReplacement = new[] { "azureSubscription", "ConnectedServiceName", "ConnectedServiceNameARM" };
                         string valueOfInputThatNeedsToBeMapped = string.Empty;
+                        string keyOfInputThatNeedsToBeMapped = string.Empty;
 
                         foreach (var input in workflowTask.Inputs)
                         {
-                            if (input.Key == inputNameWhichNeedsValueReplacement)
+                            if (inputNamesWhichNeedsValueReplacement.Contains(input.Key, StringComparer.OrdinalIgnoreCase))
                             {
                                 valueOfInputThatNeedsToBeMapped = input.Value.ToString();
+                                keyOfInputThatNeedsToBeMapped = input.Key;
                                 hasFoundInputWhichNeedsReplacement = true;
                                 break;
                             }
@@ -644,8 +646,8 @@ namespace MigrationTools.Processors
                             Mapping scMapping = ServiceConnectionMappings.FirstOrDefault(sc => sc.SourceId == valueOfInputThatNeedsToBeMapped);
 
                             IDictionary<string, object> workflowTaskInputs = workflowTask.Inputs;
-                            workflowTaskInputs.Remove(inputNameWhichNeedsValueReplacement);
-                            workflowTaskInputs.Add(inputNameWhichNeedsValueReplacement, scMapping.TargetId);
+                            workflowTaskInputs.Remove(keyOfInputThatNeedsToBeMapped);
+                            workflowTaskInputs.Add(keyOfInputThatNeedsToBeMapped, scMapping.TargetId);
                             workflowTask.Inputs = (System.Dynamic.ExpandoObject)workflowTaskInputs;
                         }
                     }
