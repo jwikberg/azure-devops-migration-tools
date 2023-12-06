@@ -647,7 +647,7 @@ namespace MigrationTools.Processors
 
                             IDictionary<string, object> workflowTaskInputs = workflowTask.Inputs;
                             workflowTaskInputs.Remove(keyOfInputThatNeedsToBeMapped);
-                            workflowTaskInputs.Add(keyOfInputThatNeedsToBeMapped, scMapping.TargetId);
+                            workflowTaskInputs.Add(keyOfInputThatNeedsToBeMapped, scMapping.TargetId ?? valueOfInputThatNeedsToBeMapped);
                             workflowTask.Inputs = (System.Dynamic.ExpandoObject)workflowTaskInputs;
                         }
                     }
