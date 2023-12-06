@@ -621,12 +621,39 @@ namespace MigrationTools.Processors
 
             foreach (var environment in definitionToBeMigrated.Environments)
             {
+                string[] inputNamesWhichNeedsValueReplacement = new[] { "azureSubscription", "ConnectedServiceName", "ConnectedServiceNameARM" };
+
+                if (environment.ProcessParameters?.Inputs?.Length > 0)
+                {
+                    bool hasFoundInputWhichNeedsReplacement = false;
+
+                    var inputsToMap = new Dictionary<string, string>();
+
+                    foreach (var input in environment.ProcessParameters.Inputs)
+                    {
+                        if (inputNamesWhichNeedsValueReplacement.Contains(input.Name, StringComparer.OrdinalIgnoreCase))
+                        {
+                            inputsToMap.Add(input.Name, input.DefaultValue);
+                            hasFoundInputWhichNeedsReplacement = true;
+                        }
+                    }
+
+                    if (hasFoundInputWhichNeedsReplacement)
+                    {
+                        foreach (var kvp in inputsToMap)
+                        {
+                            Mapping scMapping = ServiceConnectionMappings.FirstOrDefault(sc => sc.SourceId == kvp.Value);
+
+                            environment.ProcessParameters.Inputs.First(i => i.Name == kvp.Key).DefaultValue = scMapping?.TargetId ?? kvp.Value;
+                        }
+                    }
+                }
                 foreach (var deployPhase in environment.DeployPhases)
                 {
                     foreach (var workflowTask in deployPhase.WorkflowTasks)
                     {
                         bool hasFoundInputWhichNeedsReplacement = false;
-                        string[] inputNamesWhichNeedsValueReplacement = new[] { "azureSubscription", "ConnectedServiceName", "ConnectedServiceNameARM" };
+
                         string valueOfInputThatNeedsToBeMapped = string.Empty;
                         string keyOfInputThatNeedsToBeMapped = string.Empty;
 
@@ -647,7 +674,7 @@ namespace MigrationTools.Processors
 
                             IDictionary<string, object> workflowTaskInputs = workflowTask.Inputs;
                             workflowTaskInputs.Remove(keyOfInputThatNeedsToBeMapped);
-                            workflowTaskInputs.Add(keyOfInputThatNeedsToBeMapped, scMapping.TargetId ?? valueOfInputThatNeedsToBeMapped);
+                            workflowTaskInputs.Add(keyOfInputThatNeedsToBeMapped, scMapping?.TargetId ?? valueOfInputThatNeedsToBeMapped);
                             workflowTask.Inputs = (System.Dynamic.ExpandoObject)workflowTaskInputs;
                         }
                     }
