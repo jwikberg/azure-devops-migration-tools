@@ -47,6 +47,11 @@ namespace MigrationTools.Processors
         public List<string> ReleasePipelines { get; set; }
 
         /// <summary>
+        /// List of Service Connections to process. If this is `null` then all connections will be processed.
+        /// </summary>
+        public List<string> ServiceConnections { get; set; }
+
+        /// <summary>
         /// Map of Source Repository to Target Repository Names
         /// </summary>
         public Dictionary<string, string> RepositoryNameMaps { get; set; } //Can we reuse GitRepoMapping?

@@ -691,6 +691,12 @@ namespace MigrationTools.Processors
 
             var mappings = new List<Mapping>();
 
+            if (_Options.ServiceConnections != null)
+            {
+                sourceDefinitions = sourceDefinitions
+                    .Where(sourceDef => _Options.ServiceConnections.Contains(sourceDef.Name, StringComparer.OrdinalIgnoreCase));
+            }
+
             if (_Options.ServiceConnectionNameMaps.Any())
             {
                 foreach (var sourceDefinition in sourceDefinitions)
