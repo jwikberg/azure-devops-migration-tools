@@ -290,8 +290,10 @@ namespace MigrationTools.Processors
         {
             Log.LogInformation("Processing Build Pipelines..");
 
+            var targetsIncludingMaps = _Options.BuildPipelines.Concat(_Options.BuildPipelineNameMaps.Values.ToArray() ?? Array.Empty<string>());
+
             var sourceDefinitions = await GetSelectedDefinitionsFromEndpointAsync<BuildDefinition>(Source, _Options.BuildPipelines);
-            var targetDefinitions = await GetSelectedDefinitionsFromEndpointAsync<BuildDefinition>(Target, _Options.BuildPipelines);
+            var targetDefinitions = await GetSelectedDefinitionsFromEndpointAsync<BuildDefinition>(Target, targetsIncludingMaps.ToList());
             var availableTasks = await Target.GetApiDefinitionsAsync<TaskDefinition>(queryForDetails: false);
             var sourceServiceConnections = await Source.GetApiDefinitionsAsync<ServiceConnection>();
             var targetServiceConnections = await Target.GetApiDefinitionsAsync<ServiceConnection>();
@@ -301,8 +303,30 @@ namespace MigrationTools.Processors
             definitionsToBeMigrated = FilterOutIncompatibleBuildDefinitions(definitionsToBeMigrated, availableTasks, TaskGroupMapping).ToList();
             definitionsToBeMigrated = FilterAwayIfAnyMapsAreMissing(definitionsToBeMigrated, TaskGroupMapping, VariableGroupMapping);
 
+            var mappings = new List<Mapping>();
+
+            if (_Options.BuildPipelineNameMaps.Any())
+            {
+                foreach (var sourceDefinition in sourceDefinitions)
+                {
+                    if (_Options.BuildPipelineNameMaps.TryGetValue(sourceDefinition.Name, out var targetName))
+                    {
+                        var target = targetDefinitions.FirstOrDefault(t => t.Name == targetName);
+                        mappings.Add(new Mapping
+                        {
+                            Name = targetName,
+                            SourceId = sourceDefinition.Id,
+                            TargetId = target.Id
+                        });
+                    }
+                }
+            }
+
+            var filteredDefinitions = FilterOutExistingDefinitions(sourceDefinitions, targetDefinitions)
+                .Where(buildDefinition => !mappings.Any(m => m.SourceId == buildDefinition.Id));
+
             // Replace taskgroup and variablegroup sIds with tIds
-            foreach (var definitionToBeMigrated in definitionsToBeMigrated)
+            foreach (var definitionToBeMigrated in filteredDefinitions)
             {
                 var sourceConnectedServiceId = definitionToBeMigrated.Repository.Properties.ConnectedServiceId;
                 var targetConnectedServiceId = targetServiceConnections.FirstOrDefault(s => sourceServiceConnections
@@ -400,7 +424,9 @@ namespace MigrationTools.Processors
                     }
                 }
             }
-            var mappings = await Target.CreateApiDefinitionsAsync<BuildDefinition>(definitionsToBeMigrated.ToList());
+
+            var newMappings = await Target.CreateApiDefinitionsAsync<BuildDefinition>(filteredDefinitions.ToList());
+            mappings.AddRange(newMappings);
             mappings.AddRange(FindExistingMappings(sourceDefinitions, targetDefinitions, mappings));
             return mappings;
         }

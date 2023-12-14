@@ -255,6 +255,11 @@
             List of Release Pipelines to process. If this is `null` then all Release Pipelines will be processed.
             </summary>
         </member>
+        <member name="P:MigrationTools.Processors.AzureDevOpsPipelineProcessorOptions.ServiceConnections">
+            <summary>
+            List of Service Connections to process. If this is `null` then all connections will be processed.
+            </summary>
+        </member>
         <member name="P:MigrationTools.Processors.AzureDevOpsPipelineProcessorOptions.RepositoryNameMaps">
             <summary>
             Map of Source Repository to Target Repository Names
@@ -263,6 +268,11 @@
         <member name="P:MigrationTools.Processors.AzureDevOpsPipelineProcessorOptions.ServiceConnectionNameMaps">
             <summary>
             Map of Source Service Connection to Target Service Connection Names
+            </summary>
+        </member>
+        <member name="P:MigrationTools.Processors.AzureDevOpsPipelineProcessorOptions.BuildPipelineNameMaps">
+            <summary>
+            Map of  Build Pipeline to Target Build Pipeline Names
             </summary>
         </member>
         <member name="T:MigrationTools.Processors.ProcessDefinitionModel">

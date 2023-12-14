@@ -61,6 +61,11 @@ namespace MigrationTools.Processors
         /// </summary>
         public Dictionary<string, string> ServiceConnectionNameMaps { get; set; }
 
+        /// <summary>
+        /// Map of  Build Pipeline to Target Build Pipeline Names
+        /// </summary>
+        public Dictionary<string, string> BuildPipelineNameMaps { get; set; }
+
         public override Type ToConfigure => typeof(AzureDevOpsPipelineProcessor);
 
         public override IProcessorOptions GetDefault()
